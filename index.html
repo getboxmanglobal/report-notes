@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Report — Notes &amp; Disclaimers</title>
+<style>
+  :root{
+    --green-900:#1f5c45;
+    --green-700:#2e7d5b;
+    --green-600:#359068;
+    --green-100:#e8f3ed;
+    --green-50:#f3faf6;
+    --ink:#1c2b25;
+    --ink-soft:#4a5a52;
+    --line:#dbe7e0;
+    --amber-bg:#fff7e6;
+    --amber-line:#f0c869;
+    --amber-ink:#8a5a00;
+    --red-bg:#fbe9e9;
+    --red-line:#e0a3a3;
+    --red-ink:#9e2b2b;
+    --ok-bg:#e6f4ea;
+    --ok-line:#9ccaa9;
+    --ok-ink:#1f7a3d;
+    --paper:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--green-50);}
+  body{
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    line-height:1.55;
+    padding:22px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  .head{
+    display:flex;align-items:center;gap:14px;
+    border-left:5px solid var(--green-600);
+    background:linear-gradient(90deg,var(--green-100),var(--paper));
+    padding:14px 18px;border-radius:6px;
+    margin-bottom:18px;
+  }
+  .head .badge{
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--green-700);background:var(--paper);
+    border:1px solid var(--line);border-radius:20px;padding:5px 12px;white-space:nowrap;
+  }
+  .head h1{font-size:18px;font-weight:700;color:var(--green-900);letter-spacing:-.01em;}
+  .head p{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media(max-width:760px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--paper);border:1px solid var(--line);
+    border-radius:8px;padding:16px 18px;
+  }
+  .card.full{grid-column:1 / -1;}
+
+  .card h2{
+    font-size:13.5px;font-weight:700;color:var(--green-900);
+    display:flex;align-items:center;gap:9px;margin-bottom:9px;
+  }
+  .num{
+    flex:0 0 auto;width:22px;height:22px;border-radius:5px;
+    background:var(--green-600);color:#fff;font-size:12px;font-weight:700;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .card p{font-size:13px;color:var(--ink-soft);}
+  .card p + p{margin-top:7px;}
+  .src{font-weight:600;color:var(--green-700);}
+
+  .formula{
+    background:var(--green-50);border:1px dashed var(--green-600);
+    border-radius:6px;padding:11px 14px;margin-top:10px;
+    font-family:"Cascadia Code","SF Mono",Consolas,Menlo,monospace;
+    font-size:12.5px;color:var(--green-900);text-align:center;
+  }
+  .formula b{color:var(--green-700);}
+
+  .flag{
+    display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--amber-ink);background:var(--amber-bg);
+    border:1px solid var(--amber-line);border-radius:4px;padding:2px 8px;margin-left:auto;
+  }
+
+  /* colour legend */
+  .legend{
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;
+    padding:16px 18px;grid-column:1 / -1;
+  }
+  .legend h2{font-size:13.5px;font-weight:700;color:var(--green-900);
+    display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+  .legend .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:13px;}
+  .keys{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:680px){ .keys{grid-template-columns:1fr;} }
+  .key{display:flex;gap:12px;align-items:flex-start;border-radius:7px;padding:12px 14px;}
+  .key.red{background:var(--red-bg);border:1px solid var(--red-line);}
+  .key.ok{background:var(--ok-bg);border:1px solid var(--ok-line);}
+  .chip{flex:0 0 auto;width:44px;height:30px;border-radius:5px;
+    font-family:"Cascadia Code","SF Mono",Consolas,monospace;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;}
+  .chip.red{background:#f6cfcf;color:var(--red-ink);}
+  .chip.ok{background:#bfe3c9;color:var(--ok-ink);}
+  .key h3{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .key.red h3{color:var(--red-ink);}
+  .key.ok h3{color:var(--ok-ink);}
+  .key p{font-size:12px;color:var(--ink-soft);}
+
+  .notice{
+    grid-column:1 / -1;background:var(--amber-bg);
+    border:1px solid var(--amber-line);border-left:5px solid var(--amber-line);
+    border-radius:8px;padding:15px 18px;display:flex;gap:13px;align-items:flex-start;
+  }
+  .notice .ic{flex:0 0 auto;font-size:20px;line-height:1;margin-top:1px;}
+  .notice h2{font-size:13.5px;font-weight:700;color:var(--amber-ink);margin-bottom:4px;}
+  .notice p{font-size:13px;color:#6b4a08;}
+
+  .foot{text-align:center;font-size:11.5px;color:var(--ink-soft);
+    margin-top:16px;padding-top:12px;border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="badge">How to read this report</div>
+    <div>
+      <h1>Performance Report — Notes &amp; Disclaimers</h1>
+      <p>Definitions, data sources, colour coding and approval conditions for the figures shown above.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- COLOUR LEGEND -->
+    <div class="legend">
+      <h2><span class="num">★</span> Reading the colours (Gap to Goal columns)</h2>
+      <div class="sub">The <strong>Revenue Gap to Goal</strong> and <strong>GM Gap to Goal</strong> columns are colour-coded against your attainment&nbsp;%, so you can see your position at a glance.</div>
+      <div class="keys">
+        <div class="key red">
+          <div class="chip red">626,475</div>
+          <div>
+            <h3>Red — below target</h3>
+            <p>This is the amount you still need to achieve to reach your goal. You are currently short by this figure.</p>
+          </div>
+        </div>
+        <div class="key ok">
+          <div class="chip ok">84,847</div>
+          <div>
+            <h3>Green — over target</h3>
+            <p>You have already exceeded your goal. The value shown is how far above target you are.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">1</span> Revenue Achieved &amp; Net Cost</h2>
+      <p><span class="src">Source: BOXMANAGER.</span> These columns are populated directly from BOXMANAGER, based on entries made by the respective CSE. They reflect the data as it stands in the system at the time of refresh.</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span> Revenue Attainment %</h2>
+      <p>Calculated from your target against the revenue achieved as recorded in BOXMANAGER.</p>
+      <div class="formula">Revenue Attainment&nbsp;% = <b>Revenue Achieved ÷ Revenue Goal</b> × 100</div>
+    </div>
+
+    <div class="card full">
+      <h2><span class="num">3</span> Revenue Gap to Goal &amp; GM Gap to Goal</h2>
+      <p>These are your primary indicators. They show your current position against the goal — how much is left to achieve (shown in red), or, where the value is negative, how much you have already exceeded the goal by (shown in green).</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">4</span> GM Achieved <span class="flag">For reference</span></h2>
+      <p>Based purely on CSE entries and shown for your reference. This amount is <strong>subject to approval from Management</strong> following the quarterly P&amp;L evaluation.</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">5</span> Collected Gross Margin <span class="flag">For reference</span></h2>
+      <p>The portion of gross margin tied to amounts actually collected against invoices.</p>
+      <div class="formula">Collected GM = <b>Total Quarterly GM</b> × ( <b>Amount Collected</b> ÷ <b>Total Invoiced Value</b> )</div>
+    </div>
+
+    <div class="notice">
+      <div class="ic">⚠️</div>
+      <div>
+        <h2>Incentive note</h2>
+        <p>Incentives are payable <strong>only on Collected Gross Margin</strong>. The figures above are provided for your reference only. The final incentive payout is <strong>subject to Management approval after the P&amp;L evaluation</strong>.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">Boxman Global Logistics · Sales Performance Dashboard — FY26 · Figures are indicative until the quarterly P&amp;L evaluation is finalised.</div>
+
+</div>
+</body>
+</html>
