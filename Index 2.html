@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Report Q3 — FY26 · Notes &amp; Disclaimers</title>
+<style>
+  :root{
+    --green-900:#1f5c45;
+    --green-700:#2e7d5b;
+    --green-600:#359068;
+    --green-100:#e8f3ed;
+    --green-50:#f3faf6;
+    --ink:#1c2b25;
+    --ink-soft:#4a5a52;
+    --line:#dbe7e0;
+    --amber-bg:#fff7e6;
+    --amber-line:#f0c869;
+    --amber-ink:#8a5a00;
+    --red-bg:#fbe9e9;
+    --red-line:#e0a3a3;
+    --red-ink:#9e2b2b;
+    --ok-bg:#e6f4ea;
+    --ok-line:#9ccaa9;
+    --ok-ink:#1f7a3d;
+    --paper:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--green-50);}
+  body{
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    line-height:1.55;
+    padding:22px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  .head{
+    display:flex;align-items:center;gap:14px;
+    border-left:5px solid var(--green-600);
+    background:linear-gradient(90deg,var(--green-100),var(--paper));
+    padding:14px 18px;border-radius:6px;
+    margin-bottom:18px;
+  }
+  .head .badge{
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--green-700);background:var(--paper);
+    border:1px solid var(--line);border-radius:20px;padding:5px 12px;white-space:nowrap;
+  }
+  .head h1{font-size:18px;font-weight:700;color:var(--green-900);letter-spacing:-.01em;}
+  .head p{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media(max-width:760px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--paper);border:1px solid var(--line);
+    border-radius:8px;padding:16px 18px;
+  }
+  .card.full{grid-column:1 / -1;}
+
+  .card h2{
+    font-size:13.5px;font-weight:700;color:var(--green-900);
+    display:flex;align-items:center;gap:9px;margin-bottom:9px;flex-wrap:wrap;
+  }
+  .num{
+    flex:0 0 auto;width:22px;height:22px;border-radius:5px;
+    background:var(--green-600);color:#fff;font-size:12px;font-weight:700;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .card p{font-size:13px;color:var(--ink-soft);}
+  .card p + p{margin-top:7px;}
+  .src{font-weight:600;color:var(--green-700);}
+
+  .formula{
+    background:var(--green-50);border:1px dashed var(--green-600);
+    border-radius:6px;padding:11px 14px;margin-top:10px;
+    font-family:"Cascadia Code","SF Mono",Consolas,Menlo,monospace;
+    font-size:12.5px;color:var(--green-900);text-align:center;
+  }
+  .formula b{color:var(--green-700);}
+
+  .flag{
+    display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--amber-ink);background:var(--amber-bg);
+    border:1px solid var(--amber-line);border-radius:4px;padding:2px 8px;margin-left:auto;
+  }
+  .flag.key{color:var(--ok-ink);background:var(--ok-bg);border-color:var(--ok-line);}
+
+  /* policy reference chip */
+  .ref{
+    display:inline-block;font-size:10px;font-weight:700;letter-spacing:.02em;
+    color:var(--green-700);background:var(--green-50);
+    border:1px solid var(--green-600);border-radius:4px;padding:2px 7px;white-space:nowrap;
+  }
+  .card h2 .ref{margin-left:8px;}
+  p .ref{vertical-align:1px;}
+  .reflist{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px;}
+
+  /* colour legend */
+  .legend{
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;
+    padding:16px 18px;grid-column:1 / -1;
+  }
+  .legend h2{font-size:13.5px;font-weight:700;color:var(--green-900);
+    display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+  .legend .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:13px;}
+  .keys{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:680px){ .keys{grid-template-columns:1fr;} }
+  .key{display:flex;gap:12px;align-items:flex-start;border-radius:7px;padding:12px 14px;}
+  .key.red{background:var(--red-bg);border:1px solid var(--red-line);}
+  .key.ok{background:var(--ok-bg);border:1px solid var(--ok-line);}
+  .chip{flex:0 0 auto;width:72px;height:30px;border-radius:5px;
+    font-family:"Cascadia Code","SF Mono",Consolas,monospace;font-size:10.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;}
+  .chip.red{background:#f6cfcf;color:var(--red-ink);}
+  .chip.ok{background:#bfe3c9;color:var(--ok-ink);}
+  .key h3{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .key.red h3{color:var(--red-ink);}
+  .key.ok h3{color:var(--ok-ink);}
+  .key p{font-size:12px;color:var(--ink-soft);}
+
+  .notice{
+    grid-column:1 / -1;background:var(--amber-bg);
+    border:1px solid var(--amber-line);border-left:5px solid var(--amber-line);
+    border-radius:8px;padding:15px 18px;display:flex;gap:13px;align-items:flex-start;
+  }
+  .notice .ic{flex:0 0 auto;font-size:20px;line-height:1;margin-top:1px;}
+  .notice h2{font-size:13.5px;font-weight:700;color:var(--amber-ink);margin-bottom:4px;}
+  .notice p{font-size:13px;color:#6b4a08;}
+  .notice p + p{margin-top:6px;}
+
+  /* document reference block */
+  .docref{
+    grid-column:1 / -1;
+    background:linear-gradient(90deg,var(--green-100),var(--paper));
+    border:1px solid var(--green-600);border-left:5px solid var(--green-600);
+    border-radius:8px;padding:16px 18px;
+  }
+  .docref h2{font-size:13.5px;font-weight:700;color:var(--green-900);
+    display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+  .docref .doc{font-weight:700;color:var(--green-900);}
+  .docref p{font-size:12.5px;color:var(--ink-soft);}
+  .map{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 22px;margin-top:12px;}
+  @media(max-width:760px){ .map{grid-template-columns:1fr 1fr;} }
+  @media(max-width:480px){ .map{grid-template-columns:1fr;} }
+  .map div{display:flex;gap:8px;font-size:11.5px;color:var(--ink-soft);}
+  .map b{color:var(--green-700);min-width:54px;flex:0 0 auto;}
+
+  .foot{text-align:center;font-size:11.5px;color:var(--ink-soft);
+    margin-top:16px;padding-top:12px;border-top:1px solid var(--line);}
+  .signoff{font-size:10.5px;color:#8a978f;margin-top:6px;line-height:1.5;}
+  .signoff b{color:var(--green-700);font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="badge">How to read this report</div>
+    <div>
+      <h1>Performance Report Q3 — FY26 · Notes &amp; Disclaimers</h1>
+      <p>Definitions, data sources, colour coding and approval conditions for the figures shown above. Figures align to the Sales Compensation &amp; Incentive Policy (HRP&#8209;04, Rev 00 · Issue 03).</p>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- COLOUR LEGEND -->
+    <div class="legend">
+      <h2><span class="num">★</span> Reading the colours (Collected GM Gap to Target)</h2>
+      <div class="sub">The <strong>Collected GM Gap to Target</strong> column is colour-coded against your <strong>Collected GM Attainment&nbsp;%</strong>, so you can see your position at a glance.</div>
+      <div class="keys">
+        <div class="key red">
+          <div class="chip red">76,126.97</div>
+          <div>
+            <h3>Red — below target</h3>
+            <p>The Collected GM you still need to realise to reach your Collected GM Goal. You are currently short by this amount.</p>
+          </div>
+        </div>
+        <div class="key ok">
+          <div class="chip ok">18,886.41</div>
+          <div>
+            <h3>Green — over target</h3>
+            <p>You have already exceeded your Collected GM Goal. The value shown is how far above target you are.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1 REVENUE GOAL -->
+    <div class="card">
+      <h2><span class="num">1</span> Revenue Goal <span class="ref">Goal Letter</span></h2>
+      <p>Your quarterly revenue target, provided to you via <span class="src">Zoho People</span> in your personal Goal Letter. The Q3 goal remains unchanged; your Q4 goal will be issued by the end of September.</p>
+    </div>
+
+    <!-- 2 INVOICED REVENUE -->
+    <div class="card">
+      <h2><span class="num">2</span> Invoiced Revenue</h2>
+      <p><span class="src">Source: Zoho Books.</span> The value of actual invoices sent to your customers during the quarter. It reflects the data as it stands in Zoho Books at the time of refresh.</p>
+    </div>
+
+    <!-- 3 REVENUE ATTAINMENT -->
+    <div class="card">
+      <h2><span class="num">3</span> Revenue Attainment %</h2>
+      <p>Your invoiced revenue measured against your revenue goal.</p>
+      <div class="formula">Revenue Attainment&nbsp;% = <b>Invoiced Revenue ÷ Revenue Goal</b> × 100</div>
+    </div>
+
+    <!-- 4 CORE GM ACHIEVED -->
+    <div class="card">
+      <h2><span class="num">4</span> Core GM Achieved <span class="flag">For reference</span></h2>
+      <p><span class="src">Source: BOXMANAGER / TMS.</span> Operational gross margin based on CSE entries. Per policy, Core GM is shown for <strong>visibility only</strong> and is <strong>not</strong> the incentive metric. It is <strong>subject to Management approval</strong> after the quarterly P&amp;L evaluation.</p>
+      <div class="reflist"><span class="ref">HRP-04 §2</span><span class="ref">HRP-04 §16</span></div>
+    </div>
+
+    <!-- 5 PAYMENT COLLECTED -->
+    <div class="card">
+      <h2><span class="num">5</span> Payment Collected</h2>
+      <p><span class="src">Source: Zoho Books.</span> Eligible payments received against invoices during the quarter. Excludes VAT, duties and taxes, customs recoveries, non-sales recoveries and zero-margin reimbursements; credit notes, write-offs and reversals are deducted, and disputed invoices are excluded until resolved.</p>
+      <div class="reflist"><span class="ref">HRP-04 §6</span><span class="ref">HRP-04 §7</span></div>
+    </div>
+
+    <!-- 6 COLLECTED GM GOAL -->
+    <div class="card">
+      <h2><span class="num">6</span> Collected GM Goal</h2>
+      <p>The Collected Gross Margin target for your portfolio for the quarter — the benchmark the Collected GM Achieved and Gap to Target columns are measured against. <strong>Previously 'GM Target' is replaced and referred as 'Collected GM Goal'.</strong></p>
+    </div>
+
+    <!-- 7 COLLECTED GM ACHIEVED -->
+    <div class="card full">
+      <h2><span class="num">7</span> Collected GM Achieved <span class="flag key">Primary incentive metric</span></h2>
+      <p>This is the metric incentives are based on. On this dashboard it is derived from your eligible collections and your previous-quarter GM%:</p>
+      <div class="formula">Collected GM Achieved = <b>Payment Collected</b> × <b>Previous Quarter GM%</b></div>
+      <p>The figure shown here is <strong>indicative</strong>. The binding definition of Collected GM for incentive calculation is set out in the policy, where it is computed from eligible collections and the applicable GM%, then validated by Finance against Zoho Books and BOXMANAGER / TMS before any payout.</p>
+      <div class="reflist"><span class="ref">HRP-04 §3 — Main metric</span><span class="ref">HRP-04 §4 — Formula</span><span class="ref">HRP-04 §14 — Finance validation</span></div>
+    </div>
+
+    <!-- 8 COLLECTED GM ATTAINMENT -->
+    <div class="card">
+      <h2><span class="num">8</span> Collected GM Attainment %</h2>
+      <p>Your Collected GM Achieved measured against your Collected GM Goal. This drives the colour of the Gap to Target column.</p>
+      <div class="formula">Collected GM Attainment&nbsp;% = <b>Collected GM Achieved ÷ Collected GM Goal</b> × 100</div>
+    </div>
+
+    <!-- 9 COLLECTED GM GAP -->
+    <div class="card">
+      <h2><span class="num">9</span> Collected GM Gap to Target <span class="flag key">Primary indicator</span></h2>
+      <p>Your headline position against the goal — how much Collected GM is left to realise (<span style="color:var(--red-ink);font-weight:700;">red</span>), or how far you have already exceeded the goal (<span style="color:var(--ok-ink);font-weight:700;">green</span>).</p>
+      <div class="formula">Gap to Target = <b>Collected GM Goal − Collected GM Achieved</b></div>
+    </div>
+
+    <!-- HOW INCENTIVES ARE DETERMINED -->
+    <div class="card full">
+      <h2><span class="num">i</span> How incentives are determined</h2>
+      <p>Incentives are calculated on <strong>Collected GM only</strong>. Eligibility and the payout percentage are governed by the policy:</p>
+      <p>&bull; <strong>Eligibility</strong> is based on the previous quarter GM% threshold (below 12% — not eligible; 12–14.99% — 50%; 15–19.99% — 75%; 20–24.99% — 100%; 25%+ — 120%). <span class="ref">HRP-04 §8</span></p>
+      <p>&bull; <strong>Payout rate</strong> on Collected GM is 5% for CDM / NDM and 3% for CSE / Support. <span class="ref">HRP-04 §9</span></p>
+      <p>&bull; The quarterly payout is <strong>capped at 1× monthly fixed salary</strong>. <span class="ref">HRP-04 §10</span></p>
+      <p>&bull; All payouts are subject to <strong>Finance validation and Management approval</strong>. <span class="ref">HRP-04 §14</span> <span class="ref">HRP-04 §15</span></p>
+    </div>
+
+    <!-- INCENTIVE NOTICE -->
+    <div class="notice">
+      <div class="ic">⚠️</div>
+      <div>
+        <h2>Incentive note</h2>
+        <p>Incentives are payable <strong>only on Collected Gross Margin</strong>. All Core GM and Collected GM figures above are provided for your reference and are <strong>indicative until the quarterly P&amp;L evaluation is finalised</strong>.</p>
+        <p>The final incentive payout is <strong>subject to Management approval after the P&amp;L evaluation</strong>, and may be adjusted where there is a material variance between operational GP (BOXMANAGER / TMS) and accounting records (Zoho Books).</p>
+      </div>
+    </div>
+
+    <!-- DOCUMENT REFERENCE -->
+    <div class="docref">
+      <h2><span class="num">§</span> Where the rules come from</h2>
+      <p>All definitions, thresholds and payout conditions on this report follow the <span class="doc">Sales Compensation &amp; Incentive Policy — HRP&#8209;04 (Rev&nbsp;00 · Issue&nbsp;03)</span>. If any figure or rule is unclear, refer to that document (latest issue, available from Finance / HR or your line manager) before raising a query.</p>
+      <div class="map">
+        <div><b>§2–3</b> Core vs Collected GM, main metric</div>
+        <div><b>§4</b> Collected GM formula</div>
+        <div><b>§6</b> Data sources (Zoho / TMS)</div>
+        <div><b>§7</b> Eligible collections &amp; exclusions</div>
+        <div><b>§8</b> Eligibility thresholds</div>
+        <div><b>§9</b> Payout rates (CDM 5% / CSE 3%)</div>
+        <div><b>§10</b> Quarterly cap (1× salary)</div>
+        <div><b>§14</b> Finance validation</div>
+        <div><b>§15</b> Management approval</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">Boxman Global Logistics · Sales Performance Dashboard — FY26 · Figures are indicative until the quarterly P&amp;L evaluation is finalised. · Ref: HRP-04 Rev 00 · Issue 03
+    <div class="signoff">Prepared &amp; reviewed by <b>Sajid Shaikh</b> on 6 July 2026 &nbsp;·&nbsp; Last updated on 6 July 2026 by <b>Lakwin Jayathilaka</b></div>
+  </div>
+
+</div>
+</body>
+</html>
